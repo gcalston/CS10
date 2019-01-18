@@ -61,12 +61,14 @@ public class RegionFinder {
 					ArrayList<Point> newRegion = new ArrayList<Point>();
 					
 					while (!pointsToCheck.isEmpty()) {
-						Point newPoint = pointsToCheck.get(0);
+						Point newPoint = pointsToCheck.remove(pointsToCheck.size() - 1);
 						newRegion.add(newPoint);
+						
 						visited.setRGB( (int)newPoint.getX(),(int)newPoint.getY(), 1);
 				
 						int radius = 1;
 						
+				
 						for (int ny = Math.max(0,((int)(newPoint.getY()) - radius )); 
 						ny < Math.min(image.getHeight(), (int) (newPoint.getX()) + radius); 
 						ny++) {
@@ -78,14 +80,16 @@ public class RegionFinder {
 								if (colorMatch(targetColor, neighborColor) && visited.getRGB(nx, ny) == 0) {
 										Point neighbor = new Point(nx, ny);
 										pointsToCheck.add(neighbor);
+										visited.setRGB(nx, ny, 1);
 						
-						pointsToCheck.remove(0);
+						
 								}
 							}
 					}
 				}
-				if (newRegion.size() > 1) {
+				if (newRegion.size() > minRegion) {
 					regions.add(newRegion);
+					System.out.println(regions);
 		  }
 			
 					
@@ -116,6 +120,18 @@ public class RegionFinder {
 	 */
 	public ArrayList<Point> largestRegion() {
 		
+		ArrayList<Point> largest = null;
+		
+		while(!regions.isEmpty()) {
+		largest = regions.get(0);
+		for(ArrayList<Point> region : regions) {
+			if(region.size() > largest.size()) {
+				largest = region;
+			}	 
+			
+		   }
+		}
+		return largest;
 	}
 
 	/**
@@ -130,5 +146,14 @@ public class RegionFinder {
 		// iterate through returned arraylist from largestRegion()
 		// and c.setRGB() on all of those objects in the list to the targetColor
 		// TODO: YOUR CODE HERE
+		
+		
+		for(ArrayList<Point> array : regions) {
+			Color randomColor = new Color((int)(Math.random() * 16777216));
+			for (Point pt: array) {
+				recoloredImage.setRGB((int) pt.getX(), (int) pt.getY(), randomColor.getRGB());
+				
+			}
+		}
 	}
 }
