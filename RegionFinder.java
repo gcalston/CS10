@@ -45,21 +45,77 @@ public class RegionFinder {
 	 * Sets regions to the flood-fill regions in the image, similar enough to the trackColor.
 	 */
 	public void findRegions(Color targetColor) {
-		// TODO: YOUR CODE HERE
+
+		ArrayList<ArrayList<Point>> regions = new ArrayList<ArrayList<Point>>();
+		BufferedImage visited = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+								
+				Color intialColor = new Color(image.getRGB(x,y));
+				if (visited.getRGB(x,y) == 0 && colorMatch(intialColor, targetColor)) {
+					Point startingPoint = new Point(x,y);
+					ArrayList<Point> pointsToCheck = new ArrayList<Point>();
+					pointsToCheck.add(startingPoint);
+				
+					
+					ArrayList<Point> newRegion = new ArrayList<Point>();
+					
+					while (!pointsToCheck.isEmpty()) {
+						Point newPoint = pointsToCheck.get(0);
+						newRegion.add(newPoint);
+						visited.setRGB( (int)newPoint.getX(),(int)newPoint.getY(), 1);
+				
+						int radius = 1;
+						
+						for (int ny = Math.max(0,((int)(newPoint.getY()) - radius )); 
+						ny < Math.min(image.getHeight(), (int) (newPoint.getX()) + radius); 
+						ny++) {
+							for (int nx = Math.max(0, (int) (newPoint.getY()) - radius); 
+							nx < Math.min(image.getWidth(), (int) (newPoint.getX()) + radius);
+							nx++) {
+								Color neighborColor = new Color(image.getRGB(nx,ny));
+								
+								if (colorMatch(targetColor, neighborColor) && visited.getRGB(nx, ny) == 0) {
+										Point neighbor = new Point(nx, ny);
+										pointsToCheck.add(neighbor);
+						
+						pointsToCheck.remove(0);
+								}
+							}
+					}
+				}
+				if (newRegion.size() > 1) {
+					regions.add(newRegion);
+		  }
+			
+					
+							
+		 }
+				
+				
+		}
 	}
+ }
+	
+
 
 	/**
 	 * Tests whether the two colors are "similar enough" (your definition, subject to the maxColorDiff threshold, which you can vary).
 	 */
 	private static boolean colorMatch(Color c1, Color c2) {
 		// TODO: YOUR CODE HERE
+		int num = 0;
+		num += Math.abs(c1.getRed()-c2.getRed()) +  Math.abs(c1.getGreen()-c2.getGreen()) +
+				Math.abs(c1.getBlue()-c2.getBlue());
+		
+		return (num <= maxColorDiff);		
 	}
 
 	/**
 	 * Returns the largest region detected (if any region has been detected)
 	 */
 	public ArrayList<Point> largestRegion() {
-		// TODO: YOUR CODE HERE
+		
 	}
 
 	/**
@@ -71,6 +127,8 @@ public class RegionFinder {
 		// First copy the original
 		recoloredImage = new BufferedImage(image.getColorModel(), image.copyData(null), image.getColorModel().isAlphaPremultiplied(), null);
 		// Now recolor the regions in it
+		// iterate through returned arraylist from largestRegion()
+		// and c.setRGB() on all of those objects in the list to the targetColor
 		// TODO: YOUR CODE HERE
 	}
 }
