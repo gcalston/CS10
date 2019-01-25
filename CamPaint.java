@@ -39,8 +39,16 @@ public class CamPaint extends Webcam {
 	@Override
 	public void draw(Graphics g) {
 		// TODO: YOUR CODE HERE
+		if (displayMode == 'w') {
 		super.draw(g);
-		// g.drawImage(painting,  0,  0 , null);
+		}
+		else if (displayMode == 'p') {
+			g.drawImage(painting, 0, 0, null);
+			
+		}
+		else if (displayMode == 'r') {
+			g.drawImage(image, 0, 0, null);
+		}
 		
 	}
 
@@ -51,13 +59,21 @@ public class CamPaint extends Webcam {
 	public void processImage() {
 		// TODO: YOUR CODE HERE
 		if (painting != null && targetColor != null) {
-		finder.setImage(painting);
+		finder.setImage(image);
 		finder.findRegions(targetColor);
 		}
-	for(Point pt : finder.largestRegion()) {
-				painting.setRGB((int) pt.getX(), (int) pt.getY(), paintColor.getRGB());
-		
+		if (displayMode == 'r' ) {
+			finder.recolorImage();
+			image = finder.getRecoloredImage();
 		}
+		else if (displayMode == 'p') {
+			
+		ArrayList<Point> paintRegion = finder.largestRegion();
+		for(Point pt : paintRegion) {
+			painting.setRGB((int) pt.getX(), (int) pt.getY(), paintColor.getRGB());
+		}
+		}
+		
 	}
 	
 
@@ -67,8 +83,9 @@ public class CamPaint extends Webcam {
 	@Override
 	public void handleMousePress(int x, int y) {
 		// TODO: YOUR CODE HERE
-		if (painting != null);
-		targetColor = new Color(painting.getRGB(x, y)); //handle the mouse press to set the tracking color
+		if (image != null) {
+		targetColor = new Color(image.getRGB(x, y)); //handle the mouse press to set the tracking color
+	}
 	}
 
 	/**
