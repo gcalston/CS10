@@ -77,7 +77,7 @@ public class RegionFinder {
 								Color neighborColor = new Color(image.getRGB(nx,ny));
 								
 								if (colorMatch(targetColor, neighborColor) && visited.getRGB(nx, ny) == 0) {
-										Point neighbor = new Point(nx, ny);
+							 			Point neighbor = new Point(nx, ny);
 										pointsToCheck.add(neighbor);
 										visited.setRGB(nx, ny, 1);
 										
@@ -95,8 +95,7 @@ public class RegionFinder {
 				
 			}
 		}
-		this.regions = foundRegions;
-		System.out.println(regions);
+		regions = foundRegions;
 	}
 	
 
@@ -118,21 +117,22 @@ public class RegionFinder {
 	 */
 	public ArrayList<Point> largestRegion() {
 		
-		ArrayList<Point> largest = null;
-		
-		
-		if (!regions.isEmpty()) {
-			largest = regions.get(0);
-			for(ArrayList<Point> region : regions) {
-				if(region.size() > largest.size()) {
-				largest = region;
-				System.out.println(largest);
-			}	 
+		if (regions.size() > 0) {
+			ArrayList<Point> largest = regions.get(0);
+			for(ArrayList<Point> region: regions){
+				if (region.size() > largest.size()){
+				largest = region;	
+				}
 			
-		   }
+			}
+			return largest;
 		}
-		return largest;
-	}
+			else { 
+					return new ArrayList<Point>();
+				}
+				
+		}
+		
 
 	/**
 	 * Sets recoloredImage to be a copy of image, 
@@ -156,3 +156,4 @@ public class RegionFinder {
 		}
 	}
 }
+
