@@ -12,7 +12,7 @@ import java.util.*;
  * @author CBK, Spring 2015, updated for CamPaint
  */
 public class RegionFinder {
-	private static final int maxColorDiff = 20;				// how similar a pixel color must be to the target color, to belong to a region
+	private static final int maxColorDiff = 50;				// how similar a pixel color must be to the target color, to belong to a region
 	private static final int minRegion = 50; 				// how many points in a region to be worth considering
 
 	private BufferedImage image;                            // the image in which to find regions
@@ -20,7 +20,7 @@ public class RegionFinder {
 
 	private ArrayList<ArrayList<Point>> regions;			// a region is a list of points
 															// so the identified regions are in a list of lists of points
-
+	
 	public RegionFinder() {
 		this.image = null;
 	}
@@ -45,8 +45,8 @@ public class RegionFinder {
 	 * Sets regions to the flood-fill regions in the image, similar enough to the trackColor.
 	 */
 	public void findRegions(Color targetColor) {
-
-		ArrayList<ArrayList<Point>> regions = new ArrayList<ArrayList<Point>>();
+		// System.out.println(image.getWidth());
+		ArrayList<ArrayList<Point>> foundRegions = new ArrayList<ArrayList<Point>>();
 		BufferedImage visited = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int x = 0; x < image.getWidth(); x++) {
@@ -56,23 +56,22 @@ public class RegionFinder {
 					Point startingPoint = new Point(x,y);
 					ArrayList<Point> pointsToCheck = new ArrayList<Point>();
 					pointsToCheck.add(startingPoint);
+					// System.out.println(startingPoint);
 				
-					
 					ArrayList<Point> newRegion = new ArrayList<Point>();
 					
 					while (!pointsToCheck.isEmpty()) {
 						Point newPoint = pointsToCheck.remove(pointsToCheck.size() - 1);
 						newRegion.add(newPoint);
+						// System.out.println(newRegion);
 						
 						visited.setRGB( (int)newPoint.getX(),(int)newPoint.getY(), 1);
-				
-						int radius = 1;
-						
-				
+						int radius = 2;
+					
 						for (int ny = Math.max(0,((int)(newPoint.getY()) - radius )); 
-						ny < Math.min(image.getHeight(), (int) (newPoint.getX()) + radius); 
+						ny < Math.min(image.getHeight(), (int) (newPoint.getY()) + radius); 
 						ny++) {
-							for (int nx = Math.max(0, (int) (newPoint.getY()) - radius); 
+							for (int nx = Math.max(0, (int) (newPoint.getX()) - radius); 
 							nx < Math.min(image.getWidth(), (int) (newPoint.getX()) + radius);
 							nx++) {
 								Color neighborColor = new Color(image.getRGB(nx,ny));
@@ -81,25 +80,24 @@ public class RegionFinder {
 										Point neighbor = new Point(nx, ny);
 										pointsToCheck.add(neighbor);
 										visited.setRGB(nx, ny, 1);
-						
-						
+										
 								}
 							}
+						}
+					}
+					if (newRegion.size() > minRegion) {
+						foundRegions.add(newRegion);
+						
+						
+						
 					}
 				}
-				if (newRegion.size() > minRegion) {
-					regions.add(newRegion);
-					System.out.println(regions);
-		  }
-			
-					
-							
-		 }
 				
-				
+			}
 		}
+		this.regions = foundRegions;
+		System.out.println(regions);
 	}
- }
 	
 
 
@@ -122,11 +120,13 @@ public class RegionFinder {
 		
 		ArrayList<Point> largest = null;
 		
-		while(!regions.isEmpty()) {
-		largest = regions.get(0);
-		for(ArrayList<Point> region : regions) {
-			if(region.size() > largest.size()) {
+		
+		if (!regions.isEmpty()) {
+			largest = regions.get(0);
+			for(ArrayList<Point> region : regions) {
+				if(region.size() > largest.size()) {
 				largest = region;
+				System.out.println(largest);
 			}	 
 			
 		   }
@@ -146,8 +146,7 @@ public class RegionFinder {
 		// iterate through returned arraylist from largestRegion()
 		// and c.setRGB() on all of those objects in the list to the targetColor
 		// TODO: YOUR CODE HERE
-		
-		
+	
 		for(ArrayList<Point> array : regions) {
 			Color randomColor = new Color((int)(Math.random() * 16777216));
 			for (Point pt: array) {
