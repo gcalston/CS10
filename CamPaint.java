@@ -40,10 +40,7 @@ public class CamPaint extends Webcam {
 	public void draw(Graphics g) {
 		// TODO: YOUR CODE HERE
 		super.draw(g);
-		//g.drawImage(painting,  0,  0 , null);
-		
-
-		
+		// g.drawImage(painting,  0,  0 , null);
 		
 	}
 
@@ -57,14 +54,12 @@ public class CamPaint extends Webcam {
 		finder.setImage(painting);
 		finder.findRegions(targetColor);
 		}
-		for(Point pt : finder.largestRegion()) {
+	for(Point pt : finder.largestRegion()) {
 				painting.setRGB((int) pt.getX(), (int) pt.getY(), paintColor.getRGB());
-	
-		
 		
 		}
-		
 	}
+	
 
 	/**
 	 * Overrides the DrawingGUI method to set the track color.
@@ -99,7 +94,7 @@ public class CamPaint extends Webcam {
 	}
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater( new Runnable() {
 			public void run() {
 				new CamPaint();
 			}
